@@ -1,7 +1,6 @@
 # Use an official Node.js runtime as a parent image (slim variant for better security)
 FROM node:23-slim
 
-
 # Install Python, pip, and other dependencies
 RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
@@ -25,11 +24,11 @@ RUN pnpm install --prod
 # Copy the rest of the application source code
 COPY . .
 
-# Set the default port the app will run on
-ENV PORT=50880
+# Use Render's dynamic PORT environment variable
+ENV PORT=${PORT:-10000}
 
-# Make port 50880 available to the world outside this container
-EXPOSE 50880
+# Make the port available
+EXPOSE $PORT
 
-# Define the command to run the app
-CMD ["node", "bin/index.js"]
+# Define the command to run the app with auth token from environment
+CMD ["sh", "-c", "node bin/index.js $MCP_AUTH_TOKEN"]
